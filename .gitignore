@@ -17,4 +17,5 @@ Cargo.lock
 
 /target
 
-**/.env
+# Project specified files
+.env

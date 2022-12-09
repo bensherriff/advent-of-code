@@ -2,7 +2,11 @@ use dotenv::dotenv;
 use reqwest::header;
 use std::{env, fs};
 
-mod solutions;
+mod day1;
+mod day2;
+mod day3;
+mod day4;
+mod day5;
 
 #[tokio::main]
 async fn main() {
@@ -17,7 +21,13 @@ async fn main() {
         use_local_input = true;
     }
 
-    let functions: Vec<fn(String)> = vec![solutions::day1, solutions::day2];
+    let functions: Vec<fn(String)> = vec![
+        day1::solution,
+        day2::solution,
+        day3::solution,
+        day4::solution,
+        day5::solution,
+    ];
 
     let day: &usize = &args[1].parse().unwrap();
 
