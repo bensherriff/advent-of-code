@@ -2,11 +2,7 @@ use dotenv::dotenv;
 use reqwest::header;
 use std::{env, fs};
 
-mod day1;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
+pub mod year2022;
 
 #[tokio::main]
 async fn main() {
@@ -21,14 +17,10 @@ async fn main() {
         use_local_input = true;
     }
 
-    let functions: Vec<fn(String)> = vec![
-        day1::solution,
-        day2::solution,
-        day3::solution,
-        day4::solution,
-        day5::solution,
-    ];
+    let mut functions: Vec<fn(String)> = vec![];
+    functions.extend(&year2022::get_solutions());
 
+    let year: &usize = &2022;
     let day: &usize = &args[1].parse().unwrap();
 
     let index: usize = *day;
@@ -40,7 +32,7 @@ async fn main() {
         } else {
             let session_token = std::env::var("SESSION").expect("SESSION must be set.");
             let session = format!("session={}", session_token).to_owned();
-            get(day, &session).await
+            get(year, day, &session).await
         };
         if !input.is_empty() {
             functions[index - 1](input);
@@ -52,9 +44,9 @@ async fn main() {
     }
 }
 
-async fn get(day: &usize, session: &str) -> String {
+async fn get(year: &usize, day: &usize, session: &str) -> String {
     let client: reqwest::Client = reqwest::Client::new();
-    let url: String = format!("https://adventofcode.com/2022/day/{}/input", day);
+    let url: String = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     let mut headers: header::HeaderMap = header::HeaderMap::new();
 
     headers.insert("cookie", header::HeaderValue::from_str(session).unwrap());
