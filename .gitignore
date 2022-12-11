@@ -19,3 +19,4 @@ Cargo.lock
 
 # Project specified files
 .env
+.idea
