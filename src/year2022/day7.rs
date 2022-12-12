@@ -54,7 +54,7 @@
 //     }
 //     println!("{}", total_sum);
 // }
-use std::cell::RefCell;
+use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
 enum FileType {
@@ -147,9 +147,15 @@ pub fn solution(input: String) {
             }
         }
     }
-    // println!("{}", root.borrow().print());
-    let size = calculate_total_under_n(&root.borrow_mut().children, 100000);
+
+    let r = &root.borrow_mut();
+    let unused_space = 70000000 - r.size;
+    let free_space = 30000000 - unused_space;
+    let size = calculate_total_under_n(&r.children, 100000);
+    let mut sizes = calculate_smallest_to_delete(&r.children, free_space);
+    sizes.sort();
     println!("Total size of directories under 100,000: {}", size);
+    println!("Total size of smallest directory to delete: {}", sizes[0]);
 }
 
 fn update_size(node: &Option<Rc<RefCell<Node>>>, size: usize) {
@@ -172,4 +178,16 @@ fn calculate_total_under_n(children: &Vec<Rc<RefCell<Node>>>, size: usize) -> us
         total_size += calculate_total_under_n(&child.borrow().children, size);
     }
     total_size
+}
+
+fn calculate_smallest_to_delete(children: &Vec<Rc<RefCell<Node>>>, size: usize) -> Vec<usize> {
+    let mut sizes: Vec<usize> = Vec::new();
+    for child in children {
+        let c = child.borrow();
+        if matches!(c.file_type, FileType::Dir) && c.size >= size {
+            sizes.push(c.size);
+        }
+        sizes.append(&mut calculate_smallest_to_delete(&child.borrow().children, size));
+    }
+    sizes
 }
