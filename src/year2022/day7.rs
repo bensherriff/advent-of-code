@@ -1,60 +1,4 @@
-// use std::collections::HashMap;
-
-// // https://adventofcode.com/2022/day/7
-// pub fn solution(input: String) {
-//     let mut current_path: String = String::new();
-//     let mut path_sizes: HashMap<String, i32> = HashMap::new();
-
-//     for line in input.lines() {
-//         let words: Vec<&str> = line.split_whitespace().collect();
-
-//         if words[0] == "$" {
-//             let command = words[1];
-//             if command == "cd" {
-//                 let path = words[2];
-
-//                 if path == "/" {
-//                     current_path = path.to_string();
-//                 } else if path == ".." {
-//                     let path_parts: Vec<&str> = current_path.split('/').collect();
-//                     let mut new_path: String = String::from(path_parts[0]);
-//                     for i in 0..(path_parts.len() - 2) {
-//                         new_path = format!("{}{}/", new_path, path_parts[i]);
-//                     }
-//                     current_path = new_path;
-//                 } else {
-//                     current_path = format!("{}{}/", current_path, &path);
-//                 }
-//             }
-//         } else {
-//             if words[0] != "dir" {
-//                 let size: i32 = words[0].parse().unwrap();
-//                 *path_sizes.entry(current_path.clone()).or_insert(0) += size;
-//                 let path_parts: Vec<&str> = current_path.split('/').collect();
-//                 for i in 0..(path_parts.len() - 2) {
-//                     let mut key = format!("/{}/", path_parts[i].to_string());
-//                     if path_parts[i].to_string().is_empty() {
-//                         key = "/".to_string();
-//                     }
-//                     *path_sizes.entry(key.to_string()).or_insert(0) += size;
-//                 }
-//             }
-//         }
-//     }
-
-//     let mut total_sum = 0;
-//     for (k, v) in path_sizes {
-//         print!("{}: {}", k, v);
-//         if v <= 100000 {
-//             println!(" - Adding");
-//             total_sum += v;
-//         } else {
-//             println!("");
-//         }
-//     }
-//     println!("{}", total_sum);
-// }
-use std::cell::{RefCell, RefMut};
+use std::cell::{RefCell};
 use std::rc::Rc;
 
 enum FileType {
@@ -80,21 +24,21 @@ impl Node {
         };
     }
 
-    pub fn add_child(&mut self, new_node: Rc<RefCell<Node>>) {
-        self.children.push(new_node);
-    }
-
-    pub fn add_parent(&mut self, new_node: Option<Rc<RefCell<Node>>>) {
-        self.parent = new_node;
-    }
-
-    pub fn print(&self) -> String {
-        return String::from(&self.name) + " (" + &self.size.to_string() + ")" + if matches!(&self.file_type, FileType::Dir) { ": [" } else { "" }
-            + &self.children.iter().map(|child| child.borrow().print())
-            .collect::<Vec<String>>()
-            .join(", ")
-            + if matches!(&self.file_type, FileType::Dir) { "]" } else { "" };
-    }
+    // pub fn add_child(&mut self, new_node: Rc<RefCell<Node>>) {
+    //     self.children.push(new_node);
+    // }
+    //
+    // pub fn add_parent(&mut self, new_node: Option<Rc<RefCell<Node>>>) {
+    //     self.parent = new_node;
+    // }
+    //
+    // pub fn print(&self) -> String {
+    //     return String::from(&self.name) + " (" + &self.size.to_string() + ")" + if matches!(&self.file_type, FileType::Dir) { ": [" } else { "" }
+    //         + &self.children.iter().map(|child| child.borrow().print())
+    //         .collect::<Vec<String>>()
+    //         .join(", ")
+    //         + if matches!(&self.file_type, FileType::Dir) { "]" } else { "" };
+    // }
 }
 
 pub fn solution(input: String) {
