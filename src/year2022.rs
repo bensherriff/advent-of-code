@@ -7,6 +7,7 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
+mod day10;
 
 pub fn get_solutions() -> Vec<fn(String)> {
     let solutions: Vec<fn(String)> = vec![
@@ -19,6 +20,7 @@ pub fn get_solutions() -> Vec<fn(String)> {
         day7::solution,
         day8::solution,
         day9::solution,
+        day10::solution,
     ];
     solutions
 }
