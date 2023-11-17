@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use reqwest::header;
-use std::{fs};
+use std::fs;
 use clap::Parser;
 use std::collections::HashMap;
 
@@ -18,36 +18,36 @@ struct Arguments {
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
-    let args: Arguments = Arguments::parse();
+  dotenv().ok();
+  let args: Arguments = Arguments::parse();
 
-    let mut functions: HashMap<usize, Vec<fn(String)>> = HashMap::new();
-    functions.insert(2022, year2022::get_solutions());
+  let mut functions: HashMap<usize, Vec<fn(String)>> = HashMap::new();
+  functions.insert(2022, year2022::get_solutions());
 
-    let year_functions: &Vec<fn(String)> = match functions.get(&args.year) {
-        None => {
-            println!("No solutions found for year {}", &args.year);
-            return;
-        }
-        Some(f) => { f }
+  let year_functions: &Vec<fn(String)> = match functions.get(&args.year) {
+    None => {
+      println!("No solutions found for year {}", &args.year);
+      return;
+    }
+    Some(f) => { f }
+  };
+
+  let local_file = match args.local {
+    None => { String::new() },
+    Some(s) => { s }
+  };
+
+  if args.day >= 1 && args.day <= year_functions.len() {
+    println!("Solution for year {} day {}", args.year, args.day);
+
+    let input: String = if !local_file.is_empty() {
+      get_local_input(&local_file)
+    } else {
+      let session_token = std::env::var("SESSION").expect("SESSION must be set.");
+      let session = format!("session={}", session_token).to_owned();
+      get_remote_input(&args.year, &args.day, &session).await
     };
-
-    let local_file = match args.local {
-        None => { String::new() },
-        Some(s) => { s }
-    };
-
-    if args.day >= 1 && args.day <= year_functions.len() {
-        println!("Solution for year {} day {}", args.year, args.day);
-
-        let input: String = if !local_file.is_empty() {
-            get_local_input(&local_file)
-        } else {
-            let session_token = std::env::var("SESSION").expect("SESSION must be set.");
-            let session = format!("session={}", session_token).to_owned();
-            get_remote_input(&args.year, &args.day, &session).await
-        };
-        if !input.is_empty() {
+    if !input.is_empty() {
             year_functions[args.day - 1](input);
         } else {
             println!("Unable to retrieve input for day {}", args.day);
